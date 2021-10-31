@@ -1,10 +1,10 @@
 import { IntersectionType } from '@nestjs/mapped-types'
 import { plainToClass, Type } from 'class-transformer'
 import { IsIn, ValidateNested, validateSync } from 'class-validator'
-import { Model, Rule, RuleMetadataDTO, RuleTypes } from '../'
+import { Model, Prop, PropMetadataDTO, QueryTypes } from '../'
 
-const SCHEMA: RuleTypes.Schema = {
-  name: 'Rule Test',
+const SCHEMA: QueryTypes.Schema = {
+  name: 'Prop Test',
   required: true,
   operators: ['eq'],
   type: Number,
@@ -19,8 +19,8 @@ const SCHEMA: RuleTypes.Schema = {
   ],
 }
 
-const SCHEMA_JSON: RuleTypes.JSONSchema = {
-  name: 'Rule Test',
+const SCHEMA_JSON: QueryTypes.JSONSchema = {
+  name: 'Prop Test',
   required: true,
   operators: ['eq'],
   enums: [],
@@ -29,11 +29,11 @@ const SCHEMA_JSON: RuleTypes.JSONSchema = {
 }
 
 class SimpleDTO extends Model() {
-  @Rule(SCHEMA)
+  @Prop(SCHEMA)
   field: number
 }
 
-class ManyRulesDTO {
+class ManyPropsDTO {
   @Type(() => SimpleDTO)
   @ValidateNested()
   rules: SimpleDTO[]
@@ -46,7 +46,7 @@ describe('Schema', () => {
 
   it('Base', () => {
     class DTO extends Model() {
-      @Rule({
+      @Prop({
         type: Number,
       })
       field: number
@@ -58,7 +58,7 @@ describe('Schema', () => {
     expect(dto.toSource()).toEqual({ field: '{"eq":1}' })
     expect(dto.toSchema()).toEqual({
       field: {
-        name: 'Rule',
+        name: 'Prop',
         required: true,
         operators: ['eq'],
         type: Number,
@@ -69,7 +69,7 @@ describe('Schema', () => {
     })
     expect(dto.toJSON()).toEqual({
       field: {
-        name: 'Rule',
+        name: 'Prop',
         required: true,
         operators: ['eq'],
         type: 'Number',
@@ -87,13 +87,13 @@ describe('Schema', () => {
 
   it('should return error for conflict in same schema', () => {
     class DTO extends Model() {
-      @Rule({
+      @Prop({
         type: Number,
         conflits: [],
       })
       a: number
 
-      @Rule({
+      @Prop({
         type: Number,
         conflits: ['a'],
       })
@@ -113,7 +113,7 @@ describe('Schema', () => {
 
   it('should return error for conflict in inheritance schema', () => {
     class A extends Model() {
-      @Rule({
+      @Prop({
         type: Number,
         conflits: [],
       })
@@ -121,7 +121,7 @@ describe('Schema', () => {
     }
 
     class B extends Model() {
-      @Rule({
+      @Prop({
         type: Number,
         conflits: [
           {
@@ -148,14 +148,14 @@ describe('Schema', () => {
     )
   })
 
-  it('must return an instance of RuleMetadataDTO', () => {
-    const dto = plainToClass(RuleMetadataDTO, {
+  it('must return an instance of PropMetadataDTO', () => {
+    const dto = plainToClass(PropMetadataDTO, {
       operator: 'eq',
       value: 1,
       source: JSON.stringify({ eq: 1 }),
     })
 
-    expect(dto).toBeInstanceOf(RuleMetadataDTO)
+    expect(dto).toBeInstanceOf(PropMetadataDTO)
   })
 })
 
@@ -198,7 +198,7 @@ describe('Nested Schemas', () => {
   it("should assume a default template when there isn't one.", () => {
     const payload = [{ field: 1 }, { field: 50 }]
 
-    const dto = plainToClass(ManyRulesDTO, {
+    const dto = plainToClass(ManyPropsDTO, {
       rules: payload,
     })
 
@@ -207,7 +207,7 @@ describe('Nested Schemas', () => {
   })
 
   it('Must return a valid value for the models', () => {
-    const dto = plainToClass(ManyRulesDTO, {
+    const dto = plainToClass(ManyPropsDTO, {
       rules: [{ field: { eq: 1 } }, { field: { eq: 50 } }],
     })
 

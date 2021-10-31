@@ -1,9 +1,9 @@
 import { plainToClass, serialize, deserialize } from 'class-transformer'
-import { Model, Rule } from '..'
+import { Model, Prop } from '..'
 
 describe('Serealization', () => {
   class DTO extends Model() {
-    @Rule({
+    @Prop({
       type: Number,
     })
     id: number
@@ -14,7 +14,7 @@ describe('Serealization', () => {
   const metadata = { operator: 'eq', value: 1, source: '{"eq":1}' }
   const schema = {
     id: {
-      name: 'Rule',
+      name: 'Prop',
       required: true,
       operators: ['eq'],
       type: Number,
@@ -25,7 +25,7 @@ describe('Serealization', () => {
   }
   const jsonSchema = {
     id: {
-      name: 'Rule',
+      name: 'Prop',
       required: true,
       operators: ['eq'],
       type: 'Number',

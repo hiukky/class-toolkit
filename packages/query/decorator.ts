@@ -6,7 +6,7 @@ import {
   ValidationArguments,
 } from 'class-validator'
 import { DEFAULT_MESSAGE, DEFAULT_SCHEMA, Key } from './constants'
-import { RuleTypes } from './interfaces'
+import { QueryTypes } from './interfaces'
 import {
   getPropertyMetadataFor,
   setPropertyMetadataFor,
@@ -18,7 +18,7 @@ import { Model } from './mixin'
 
 let REFERENCES: Record<string, InstanceType<any>> = {}
 
-export function Rule(options: RuleTypes.SchemaOptions) {
+export function Prop(options: QueryTypes.SchemaOptions) {
   const schema = { ...DEFAULT_SCHEMA, ...options }
 
   return function (target: Object, propertyName: string) {
@@ -98,7 +98,7 @@ export function Rule(options: RuleTypes.SchemaOptions) {
     }
 
     registerDecorator({
-      name: Key.Rule,
+      name: Key.Prop,
       target: target.constructor,
       propertyName: propertyName,
       options: schema.options,

@@ -6,7 +6,7 @@ import {
   validateSync,
   ValidationError,
 } from 'class-validator'
-import { Model, Rule } from '../'
+import { Model, Prop } from '../'
 
 const getConstraints = (error: ValidationError[]): Record<string, string> => {
   return error[0]?.constraints as Record<string, string>
@@ -15,7 +15,7 @@ const getConstraints = (error: ValidationError[]): Record<string, string> => {
 describe('Decorate', () => {
   it('should return error to a single decorator in an operation', () => {
     class Example extends Model() {
-      @Rule({
+      @Prop({
         type: Number,
         enums: [10, 50],
         decorate: () => [
@@ -37,7 +37,7 @@ describe('Decorate', () => {
 
   it('should return error for multiple decorators and operators', () => {
     class Example extends Model() {
-      @Rule({
+      @Prop({
         type: Number,
         enums: [10, 50],
         decorate: ({ enums }) => [

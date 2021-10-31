@@ -1,30 +1,30 @@
 import { plainToClass } from 'class-transformer'
-import { Model, Rule } from '../'
+import { Model, Prop } from '../'
 
 describe('Type', () => {
-  it('Rule type', () => {
+  it('Prop type', () => {
     class DTO extends Model() {
-      @Rule({
+      @Prop({
         type: Number,
       })
       number: number
 
-      @Rule({
+      @Prop({
         type: Boolean,
       })
       bool: boolean
 
-      @Rule({
+      @Prop({
         type: Number,
       })
       array: number[]
 
-      @Rule({
+      @Prop({
         type: Date,
       })
       date: Date
 
-      @Rule({
+      @Prop({
         type: Object,
 
         options: {

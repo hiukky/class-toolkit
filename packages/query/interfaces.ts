@@ -1,17 +1,17 @@
 import { ValidationOptions } from 'class-validator'
-import { RuleMetadataDTO } from './dto'
+import { PropMetadataDTO } from './dto'
 import { OPERATORS } from './constants'
 
-export namespace RuleTypes {
+export namespace QueryTypes {
   export type Operators = keyof typeof OPERATORS
 
-  export type Payload = Record<RuleTypes.Operators, any>
+  export type Payload = Record<QueryTypes.Operators, any>
 
   export interface Class extends Function {
     new (...args: any[]): {}
   }
 
-  export type Entries = [string, RuleTypes.Schema]
+  export type Entries = [string, QueryTypes.Schema]
 
   export type ValidatorSchema = PropertyDecorator[]
 
@@ -56,7 +56,7 @@ export namespace RuleTypes {
   export type SchemaOptions = Omit<Schema, 'operators'>
 
   export type MetadataSchema = Schema & {
-    meta: RuleMetadataDTO
+    meta: PropMetadataDTO
   }
 
   export type JSONSchema = Pick<

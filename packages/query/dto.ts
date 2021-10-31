@@ -1,10 +1,10 @@
 import { IsIn, IsOptional, IsString } from 'class-validator'
 import { OPERATORS } from './constants'
-import { RuleTypes } from './interfaces'
+import { QueryTypes } from './interfaces'
 
-export class RuleMetadataDTO {
+export class PropMetadataDTO {
   @IsIn(Object.keys(OPERATORS))
-  operator: RuleTypes.Operators
+  operator: QueryTypes.Operators
 
   @IsString()
   value: any

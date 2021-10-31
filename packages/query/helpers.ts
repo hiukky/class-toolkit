@@ -1,20 +1,20 @@
 import 'reflect-metadata'
 import { plainToClass, Type } from 'class-transformer'
 import { Key } from './constants'
-import { RuleMetadataDTO } from './dto'
-import { RuleTypes } from './interfaces'
+import { PropMetadataDTO } from './dto'
+import { QueryTypes } from './interfaces'
 
 export const parseToMetadata = (
-  schema: Partial<RuleTypes.MetadataSchema>,
-): RuleMetadataDTO => {
-  const metadata = {} as RuleMetadataDTO
+  schema: Partial<QueryTypes.MetadataSchema>,
+): PropMetadataDTO => {
+  const metadata = {} as PropMetadataDTO
 
   if (schema.meta instanceof Object) {
     const payload = Object.entries(schema.meta).filter(Boolean)
 
     const [operator, value] = payload[0]
 
-    metadata['operator'] = operator as RuleTypes.Operators
+    metadata['operator'] = operator as QueryTypes.Operators
     metadata['value'] = value
     metadata['source'] = JSON.stringify(schema.meta)
   } else if (schema.operators?.length === 1) {
@@ -27,7 +27,7 @@ export const parseToMetadata = (
 }
 
 export const setPropertyMetadataFor = (
-  schema: Partial<RuleTypes.MetadataSchema>,
+  schema: Partial<QueryTypes.MetadataSchema>,
   property: string,
   target: Object,
 ): void => {
@@ -41,13 +41,13 @@ export const setPropertyMetadataFor = (
 export const getPropertyMetadataFor = (
   property: string,
   target: Object,
-): RuleTypes.MetadataSchema => {
+): QueryTypes.MetadataSchema => {
   return Reflect.get(target, `__${property}`) || {}
 }
 
 export const setPropertySchemaFor = (
   property: string,
-  schema: RuleTypes.Schema,
+  schema: QueryTypes.Schema,
   target: Object,
 ) => {
   Reflect.defineMetadata(
@@ -81,7 +81,7 @@ export const getParsedValueFor = <T extends Function, V = string>(
 }
 
 export const extractConflitsFor = (
-  conflits: RuleTypes.Schema['conflits'],
+  conflits: QueryTypes.Schema['conflits'],
 ): string[] => {
   let partialConflits: string[] = []
 

@@ -1,29 +1,29 @@
 import 'reflect-metadata'
-import { RuleTypes } from './interfaces'
+import { QueryTypes } from './interfaces'
 import { Key, OPERATORS } from './constants'
-import { RuleMetadataDTO } from './dto'
+import { PropMetadataDTO } from './dto'
 import { extractConflitsFor } from './helpers'
 
-type Of<T> = T & RuleConstructor<Contract>
+type Of<T> = T & PropConstructor<Contract>
 type PropsOf<T> = keyof Omit<T, keyof Contract>
 type KeyOf<T> = PropsOf<T> extends never ? string : PropsOf<T>
 
-interface RuleConstructor<T extends {}> {
+interface PropConstructor<T extends {}> {
   new (...args: any[]): T
 }
 
 export interface Contract {
-  get(property: KeyOf<this>): RuleMetadataDTO
+  get(property: KeyOf<this>): PropMetadataDTO
   toSource<K extends Record<KeyOf<this>, any>>(): K
-  toJSON(): Record<KeyOf<this>, RuleTypes.JSONSchema>
-  toSchema(): Record<KeyOf<this>, RuleTypes.Schema>
+  toJSON(): Record<KeyOf<this>, QueryTypes.JSONSchema>
+  toSchema(): Record<KeyOf<this>, QueryTypes.Schema>
 }
 
 abstract class ValueDTO {}
 
-const SCHEMAS: Record<string, RuleTypes.Schema> = {}
+const SCHEMAS: Record<string, QueryTypes.Schema> = {}
 
-export function Model<T extends RuleConstructor<{}>>(
+export function Model<T extends PropConstructor<{}>>(
   target: T = class {} as T,
 ): Of<T> {
   return class Model extends target implements Contract {
@@ -44,21 +44,21 @@ export function Model<T extends RuleConstructor<{}>>(
       SCHEMAS[name] = Reflect.getMetadata(Key.Schema, this.constructor) || {}
     }
 
-    get<K extends KeyOf<this>>(property: K): RuleMetadataDTO {
+    get<K extends KeyOf<this>>(property: K): PropMetadataDTO {
       return Reflect.get(this, `__${property}`)?.['meta']
     }
 
-    toSchema<K extends KeyOf<this>>(): Record<K, RuleTypes.Schema> {
+    toSchema<K extends KeyOf<this>>(): Record<K, QueryTypes.Schema> {
       return Object.values(SCHEMAS).reduce(
         (a, b) => ({ ...a, ...b }),
         {},
       ) as Record<KeyOf<this>, any>
     }
 
-    toJSON(): Record<KeyOf<this>, RuleTypes.JSONSchema> {
+    toJSON(): Record<KeyOf<this>, QueryTypes.JSONSchema> {
       return Object.fromEntries(
         Object.entries(this.toSchema<any>()).map(
-          ([key, data]: RuleTypes.Entries) => {
+          ([key, data]: QueryTypes.Entries) => {
             return [
               key,
               Object.fromEntries(
@@ -80,7 +80,7 @@ export function Model<T extends RuleConstructor<{}>>(
             ]
           },
         ),
-      ) as Record<KeyOf<this>, RuleTypes.JSONSchema>
+      ) as Record<KeyOf<this>, QueryTypes.JSONSchema>
     }
 
     toSource<K extends Record<KeyOf<this>, any>>(): K {

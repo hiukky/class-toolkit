@@ -1,4 +1,4 @@
-import { RuleTypes } from './interfaces'
+import { QueryTypes } from './interfaces'
 
 export const OPERATORS = <const>{
   ls: 'less',
@@ -12,7 +12,7 @@ export const OPERATORS = <const>{
 }
 
 export enum Key {
-  Rule = 'rule',
+  Prop = 'rule',
   Schema = 'rules::storage:schema',
   Metadata = 'rules::storage:metadata',
   Context = 'rules::storage:schema.context',
@@ -20,8 +20,8 @@ export enum Key {
 
 export const DEFAULT_MESSAGE = 'rule not satisfied'
 
-export const DEFAULT_SCHEMA: RuleTypes.Schema = {
-  name: 'Rule',
+export const DEFAULT_SCHEMA: QueryTypes.Schema = {
+  name: 'Prop',
   required: true,
   operators: ['eq'],
   type: String,
