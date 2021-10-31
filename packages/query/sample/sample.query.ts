@@ -1,0 +1,72 @@
+import { IsArray, IsEmail, IsIn } from 'packages/common'
+import { Model, Prop } from '..'
+
+const LEVELS = <const>['admin', 'master']
+
+type Level = typeof LEVELS[number]
+
+export class Sample extends Model() {
+  @Prop({
+    name: 'Email',
+    type: String,
+    enums: [],
+    args: [],
+    conflits: [],
+    required: true,
+    validate: context => {
+      return true
+    },
+    decorate: () => [
+      {
+        when: ['eq'],
+        with: [IsEmail()],
+      },
+    ],
+  })
+  email: string
+
+  @Prop({
+    name: 'Level access',
+    type: String,
+    enums: LEVELS,
+    args: [],
+    conflits: [],
+    required: true,
+    validate: context => {
+      return true
+    },
+    decorate: ({ enums }) => [
+      {
+        when: ['eq'],
+        with: [IsIn(enums)],
+      },
+      {
+        when: ['in'],
+        with: [IsArray(), IsIn(enums, { each: true })],
+      },
+    ],
+  })
+  roles: Level | Level[]
+
+  @Prop({
+    name: 'Username',
+    type: String,
+    enums: [],
+    args: [],
+    conflits: ['email'],
+    required: true,
+    options: {
+      message: 'expected a valid username',
+    },
+    validate: context => {
+      return true
+    },
+    decorate: ({ enums }) => [
+      {
+        when: ['eq'],
+        with: [IsIn(enums)],
+      },
+    ],
+  })
+  username: string
+}
