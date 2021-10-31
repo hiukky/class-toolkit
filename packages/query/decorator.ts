@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { Transform, Type } from 'class-transformer'
+import { Exclude, Transform, Type } from 'class-transformer'
 import {
   IsNotEmpty,
   registerDecorator,
@@ -7,7 +7,6 @@ import {
 } from 'class-validator'
 import { DEFAULT_MESSAGE, DEFAULT_SCHEMA, Key } from './constants'
 import { RuleTypes } from './interfaces'
-import { Value } from './mixin'
 import {
   getPropertyMetadataFor,
   setPropertyMetadataFor,
@@ -32,10 +31,6 @@ export function Rule(options: RuleTypes.SchemaOptions) {
     setPropertySchemaFor(propertyName, schema, target.constructor)
 
     Type(data => {
-      console.log({
-        A: 'Type',
-      })
-
       class Base extends Model() {}
 
       const meta = parseToMetadata({
@@ -73,7 +68,7 @@ export function Rule(options: RuleTypes.SchemaOptions) {
       setPropertyMetadataFor(
         { ...schema, meta, operators: Array.from(new Set(operators)) },
         propertyName,
-        target,
+        data?.newObject,
       )
 
       const value = getParsedValueFor(schema.type, meta?.value)
@@ -86,15 +81,11 @@ export function Rule(options: RuleTypes.SchemaOptions) {
 
       REFERENCES[target.constructor.name] = data?.newObject
 
-      return Value()
+      return schema.type
     })(target, propertyName)
 
     Transform(
       data => {
-        console.log({
-          A: 'Transform',
-        })
-
         return data.obj[propertyName]
       },
       {
@@ -176,7 +167,7 @@ export function Rule(options: RuleTypes.SchemaOptions) {
         },
         defaultMessage: () => {
           return `${propertyName}: ${
-            CONSTRAINTS.at(-1)?.replace(Key.Prop, '').trim() || DEFAULT_MESSAGE
+            CONSTRAINTS.at(-1)?.trim() || DEFAULT_MESSAGE
           }`
         },
       },

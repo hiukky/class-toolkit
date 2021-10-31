@@ -93,13 +93,3 @@ export function Model<T extends RuleConstructor<{}>>(
     }
   }
 }
-
-export function Value(): typeof ValueDTO {
-  Object.keys(OPERATORS).forEach(op => {
-    Reflect.defineProperty(ValueDTO, op, {
-      value: undefined,
-    })
-  })
-
-  return ValueDTO
-}
