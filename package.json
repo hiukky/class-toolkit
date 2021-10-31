@@ -4,10 +4,11 @@
   "repository": "git@github.com:hiukky/class-toolkit.git",
   "author": "Romullo <developermarsh@gmail.com>",
   "license": "MIT",
+  "main": "dist/index.js",
   "scripts": {
     "prepare": "husky install",
     "prebuild": "rimraf dist",
-    "build": "node ./ace",
+    "build": "esbuild index.ts --outfile=dist/index.js --bundle --platform=node --minify --tsconfig=tsconfig.build.json",
     "postbuild": "tsc -p tsconfig.build.json",
     "test": "jest",
     "test:cov": "jest --coverage",
@@ -24,6 +25,8 @@
     "@types/node": "^16.11.6",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "@typescript-eslint/parser": "^5.2.0",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
     "esbuild": "^0.13.12",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
@@ -37,26 +40,14 @@
     "ts-node": "^10.4.0",
     "typescript": "^4.4.4"
   },
-  "dependencies": {
+  "peerDependencies": {
     "class-transformer": "^0.4.0",
-    "class-validator": "^0.13.1",
-    "reflect-metadata": "^0.1.13"
+    "class-validator": "^0.13.1"
   },
-  "exports": {
-    "common": "./dist/common/index.js",
-    "query": "./dist/query/index.js"
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
   },
   "files": [
     "dist"
-  ],
-  "typesVersions": {
-    "*": {
-      "common": [
-        "./dist/common/index.d.ts"
-      ],
-      "query": [
-        "./dist/query/index.d.ts"
-      ]
-    }
-  }
+  ]
 }

@@ -1,7 +1,10 @@
 import { IntersectionType } from '@nestjs/mapped-types'
 import { plainToClass, Type } from 'class-transformer'
 import { IsIn, ValidateNested, validateSync } from 'class-validator'
-import { Model, Prop, PropMetadataDTO, QueryTypes } from '../'
+import { Model } from '../lib/mixin'
+import { QueryTypes } from '../lib/interfaces'
+import { PropMetadataDTO } from '../lib/dto'
+import { Prop } from '../lib/decorator'
 
 const SCHEMA: QueryTypes.Schema = {
   name: 'Prop Test',
@@ -26,6 +29,7 @@ const SCHEMA_JSON: QueryTypes.JSONSchema = {
   enums: [],
   args: [],
   conflits: [],
+  type: 'Number',
 }
 
 class SimpleDTO extends Model() {

@@ -2,11 +2,16 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./packages",
     "baseUrl": ".",
     "declaration": true,
     "emitDeclarationOnly": true
   },
-  "include": ["./packages/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "jest.config.ts"]
+  "include": ["lib", "index.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.sample.ts",
+    "jest.config.ts"
+  ]
 }

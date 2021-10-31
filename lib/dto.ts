@@ -10,7 +10,7 @@ export class PropMetadataDTO {
   value: any
 
   @IsOptional()
-  args?: any
+  args?: any[]
 
   @IsString()
   source: string

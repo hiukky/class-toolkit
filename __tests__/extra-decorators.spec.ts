@@ -1,6 +1,6 @@
 import { plainToClass } from 'class-transformer'
-import { Prop } from '../'
-import { Model } from '../mixin'
+import { Prop } from '../lib/decorator'
+import { Model } from '../lib/mixin'
 
 describe('Extra Decorators', () => {
   it('Must apply new decorators after rules effect', () => {

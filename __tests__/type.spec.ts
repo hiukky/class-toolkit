@@ -1,5 +1,6 @@
 import { plainToClass } from 'class-transformer'
-import { Model, Prop } from '../'
+import { Model } from '../lib/mixin'
+import { Prop } from '../lib/decorator'
 
 describe('Type', () => {
   it('Prop type', () => {

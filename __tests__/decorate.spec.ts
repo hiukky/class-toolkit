@@ -6,7 +6,8 @@ import {
   validateSync,
   ValidationError,
 } from 'class-validator'
-import { Model, Prop } from '../'
+import { Prop } from '../lib/decorator'
+import { Model } from '../lib/mixin'
 
 const getConstraints = (error: ValidationError[]): Record<string, string> => {
   return error[0]?.constraints as Record<string, string>

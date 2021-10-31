@@ -48,7 +48,7 @@ export namespace QueryTypes {
         }[]
     options?: ValidationOptions
     decorate?: (partialSchema: Context<any, any>['schema']) => Decorate[]
-    validate?: <V extends unknown, A extends unknown>(
+    validate?: <V extends any, A extends any[]>(
       context: Context<V, A>,
     ) => boolean | string
   }
@@ -62,5 +62,7 @@ export namespace QueryTypes {
   export type JSONSchema = Pick<
     Schema,
     'name' | 'required' | 'enums' | 'args' | 'operators' | 'conflits'
-  >
+  > & {
+    type: string
+  }
 }

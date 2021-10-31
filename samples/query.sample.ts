@@ -1,5 +1,5 @@
-import { IsArray, IsEmail, IsIn } from 'packages/common'
-import { Model, Prop } from '..'
+import { IsArray, IsEmail, IsIn } from 'class-validator'
+import { Model, Prop } from '../lib'
 
 const LEVELS = <const>['admin', 'master']
 

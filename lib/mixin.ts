@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { QueryTypes } from './interfaces'
-import { Key, OPERATORS } from './constants'
+import { JSON_PROPS, Key } from './constants'
 import { PropMetadataDTO } from './dto'
 import { extractConflitsFor } from './helpers'
 
@@ -63,7 +63,9 @@ export function Model<T extends PropConstructor<{}>>(
               key,
               Object.fromEntries(
                 Object.entries(data)
-                  .filter(([option]) => !['is', 'options'].includes(option))
+                  .filter(([option]) =>
+                    JSON_PROPS.includes(option as keyof QueryTypes.JSONSchema),
+                  )
                   .map(([key, value]) => {
                     switch (key) {
                       case 'type':

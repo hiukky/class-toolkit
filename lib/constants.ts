@@ -1,5 +1,15 @@
 import { QueryTypes } from './interfaces'
 
+export const JSON_PROPS = <const>[
+  'name',
+  'required',
+  'enums',
+  'args',
+  'operators',
+  'conflits',
+  'type',
+]
+
 export const OPERATORS = <const>{
   ls: 'less',
   le: 'lessOrEqual',
