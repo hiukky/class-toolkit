@@ -13,8 +13,6 @@ export namespace RuleTypes {
 
   export type Entries = [string, RuleTypes.Schema]
 
-  // export type ValidatorSchema = [boolean | number, string?][];
-
   export type ValidatorSchema = PropertyDecorator[]
 
   export type BuiderOperator = Record<
