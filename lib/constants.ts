@@ -32,7 +32,7 @@ export const DEFAULT_MESSAGE = 'rule not satisfied'
 
 export const DEFAULT_SCHEMA: QueryTypes.Schema = {
   name: 'Prop',
-  required: true,
+  required: false,
   operators: ['eq'],
   type: String,
   enums: [],

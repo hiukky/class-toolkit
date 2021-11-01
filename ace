@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process')
+
+spawn(
+  'yarn',
+  [
+    'esbuild',
+    'index.ts',
+    '--outfile=dist/index.js',
+    '--bundle',
+    '--minify',
+    '--platform=node',
+    '--external:class-transformer',
+    '--external:class-validator',
+    '--external:reflect-metadata',
+    '--tsconfig=tsconfig.build.json',
+  ],
+  { stdio: 'inherit' },
+)

@@ -7,7 +7,7 @@ import { Prop } from '../lib/decorator'
 
 const SCHEMA: QueryTypes.SchemaOptions = {
   name: 'Prop Test',
-  required: true,
+  required: false,
   type: Number,
   enums: [],
   args: [],
@@ -22,7 +22,7 @@ const SCHEMA: QueryTypes.SchemaOptions = {
 
 const SCHEMA_JSON: QueryTypes.JSONSchema = {
   name: 'Prop Test',
-  required: true,
+  required: false,
   operators: ['eq'],
   enums: [],
   args: [],
@@ -61,7 +61,7 @@ describe('Schema', () => {
     expect(dto.toSchema()).toEqual({
       field: {
         name: 'Prop',
-        required: true,
+        required: false,
         operators: ['eq'],
         type: Number,
         enums: [],
@@ -72,7 +72,7 @@ describe('Schema', () => {
     expect(dto.toJSON()).toEqual({
       field: {
         name: 'Prop',
-        required: true,
+        required: false,
         operators: ['eq'],
         type: 'Number',
         enums: [],

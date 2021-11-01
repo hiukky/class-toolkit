@@ -12,7 +12,7 @@ export class Sample extends Model() {
     enums: [],
     args: [],
     conflits: [],
-    required: true,
+    required: false,
     validate: context => {
       return true
     },
@@ -31,7 +31,7 @@ export class Sample extends Model() {
     enums: LEVELS,
     args: [],
     conflits: [],
-    required: true,
+    required: false,
     validate: context => {
       return true
     },
@@ -54,7 +54,7 @@ export class Sample extends Model() {
     enums: [],
     args: [],
     conflits: ['email'],
-    required: true,
+    required: false,
     options: {
       message: 'expected a valid username',
     },

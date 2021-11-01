@@ -8,7 +8,7 @@
   "scripts": {
     "prepare": "husky install",
     "prebuild": "rimraf dist",
-    "build": "esbuild index.ts --outfile=dist/index.js --bundle --platform=node --minify --tsconfig=tsconfig.build.json",
+    "build": "node ./ace",
     "postbuild": "tsc -p tsconfig.build.json",
     "test": "jest",
     "test:cov": "jest --coverage",
@@ -27,6 +27,7 @@
     "@typescript-eslint/parser": "^5.2.0",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
+    "reflect-metadata": "^0.1.13",
     "esbuild": "^0.13.12",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
@@ -42,9 +43,7 @@
   },
   "peerDependencies": {
     "class-transformer": "^0.4.0",
-    "class-validator": "^0.13.1"
-  },
-  "dependencies": {
+    "class-validator": "^0.13.1",
     "reflect-metadata": "^0.1.13"
   },
   "files": [

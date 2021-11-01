@@ -16,7 +16,7 @@ describe('Serealization', () => {
   const schema = {
     id: {
       name: 'Prop',
-      required: true,
+      required: false,
       operators: ['eq'],
       type: Number,
       enums: [],
@@ -27,7 +27,7 @@ describe('Serealization', () => {
   const jsonSchema = {
     id: {
       name: 'Prop',
-      required: true,
+      required: false,
       operators: ['eq'],
       type: 'Number',
       enums: [],
