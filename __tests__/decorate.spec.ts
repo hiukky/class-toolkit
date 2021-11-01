@@ -31,6 +31,7 @@ describe('Decorate', () => {
 
     const dto = plainToClass(Example, { id: { eq: 'A' } })
 
+    expect(dto.toJSON().id.operators).toEqual(['eq'])
     expect(getConstraints(validateSync(dto))).toEqual({
       isNumber: 'id must be a number conforming to the specified constraints',
     })
@@ -62,6 +63,8 @@ describe('Decorate', () => {
     const dtoA = plainToClass(Example, { id: { eq: 'A' } })
     const dtoB = plainToClass(Example, { id: { in: 1 } })
     const dtoC = plainToClass(Example, { id: { ls: 100 } })
+
+    expect(dtoA.toJSON().id.operators).toEqual(['eq', 'df', 'ls', 'in', 'ni'])
 
     expect(getConstraints(validateSync(dtoA))).toEqual({
       isNumber: 'id must be a number conforming to the specified constraints',

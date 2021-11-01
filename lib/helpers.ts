@@ -9,19 +9,24 @@ export const parseToMetadata = (
 ): PropMetadataDTO => {
   const metadata = {} as PropMetadataDTO
 
-  if (schema.meta instanceof Object) {
-    const payload = Object.entries(schema.meta).filter(Boolean)
+  try {
+    const meta =
+      typeof schema.meta === 'string' ? JSON.parse(schema.meta) : schema.meta
 
-    const [operator, value] = payload[0]
+    if (meta instanceof Object) {
+      const payload = Object.entries(meta).filter(Boolean)
 
-    metadata['operator'] = operator as QueryTypes.Operators
-    metadata['value'] = value
-    metadata['source'] = JSON.stringify(schema.meta)
-  } else if (schema.operators?.length === 1) {
-    metadata['operator'] = schema.operators[0]
-    metadata['value'] = schema.meta
-    metadata['source'] = JSON.stringify({ [metadata.operator]: schema.meta })
-  }
+      const [operator, value] = payload[0]
+
+      metadata['operator'] = operator as QueryTypes.Operators
+      metadata['value'] = value
+      metadata['source'] = JSON.stringify(meta)
+    } else if (schema.operators?.length === 1) {
+      metadata['operator'] = schema.operators[0]
+      metadata['value'] = meta
+      metadata['source'] = JSON.stringify({ [metadata.operator]: meta })
+    }
+  } catch {}
 
   return metadata
 }
