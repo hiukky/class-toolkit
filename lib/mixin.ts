@@ -3,10 +3,16 @@ import { QueryTypes } from './interfaces'
 import { JSON_PROPS, Key } from './constants'
 import { PropMetadataDTO } from './dto'
 import { extractConflitsFor } from './helpers'
+import { Prop } from './decorator'
 
 type Of<T> = T & PropConstructor<Contract>
 type PropsOf<T> = keyof Omit<T, keyof Contract>
 type KeyOf<T> = PropsOf<T> extends never ? string : PropsOf<T>
+type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (
+  x: infer R,
+) => any
+  ? R
+  : never
 
 interface PropConstructor<T extends {}> {
   new (...args: any[]): T
@@ -19,40 +25,29 @@ export interface Contract {
   toSchema(): Record<KeyOf<this>, QueryTypes.Schema>
 }
 
-abstract class ValueDTO {}
-
-const SCHEMAS: Record<string, QueryTypes.Schema> = {}
-
-export function Model<T extends PropConstructor<{}>>(
-  target: T = class {} as T,
-): Of<T> {
-  return class Model extends target implements Contract {
-    constructor(...args: any[]) {
-      super()
-      this.register()
-    }
-
+function Factory() {
+  return class Model implements Contract {
     private get __properties(): string[] {
       return Object.keys(Object.getOwnPropertyDescriptors(this)).filter(key =>
         key.startsWith('__'),
       )
     }
 
-    private register(): void {
-      const name = this.constructor.name
-
-      SCHEMAS[name] = Reflect.getMetadata(Key.Schema, this.constructor) || {}
-    }
-
     get<K extends KeyOf<this>>(property: K): PropMetadataDTO {
-      return Reflect.get(this, `__${property}`)?.['meta']
+      return Reflect.get(this, `__${property}`)
     }
 
     toSchema<K extends KeyOf<this>>(): Record<K, QueryTypes.Schema> {
-      return Object.values(SCHEMAS).reduce(
-        (a, b) => ({ ...a, ...b }),
-        {},
-      ) as Record<KeyOf<this>, any>
+      return Reflect.getMetadata(Key.Schema, this.constructor) || {}
+    }
+
+    toSource<K extends Record<KeyOf<this>, any>>(): K {
+      return Object.fromEntries(
+        this.__properties.map(key => [
+          key.slice(2),
+          Reflect.get(this, key)['source'],
+        ]),
+      ) as K
     }
 
     toJSON(): Record<KeyOf<this>, QueryTypes.JSONSchema> {
@@ -84,14 +79,36 @@ export function Model<T extends PropConstructor<{}>>(
         ),
       ) as Record<KeyOf<this>, QueryTypes.JSONSchema>
     }
-
-    toSource<K extends Record<KeyOf<this>, any>>(): K {
-      return Object.fromEntries(
-        this.__properties.map(key => [
-          key.slice(2),
-          Reflect.get(this, key)['meta']['source'],
-        ]),
-      ) as K
-    }
   }
+}
+
+export function Model<T extends PropConstructor<{}>[]>(
+  ...targets: T
+): Of<UnionToIntersection<typeof targets[number]>> {
+  class Base extends Factory() {}
+
+  let factory: any = Base
+
+  if (targets.length) {
+    const target = new Base()
+
+    const schemas: any[] = targets
+      .map(baseConstructor => Reflect.getMetadata(Key.Schema, baseConstructor))
+      .reduce((a, b) => Object.assign(a, b))
+
+    Object.entries(schemas).forEach(([property, schema]) => {
+      Reflect.defineProperty(target, property, {
+        value: undefined,
+      })
+
+      Prop({ ...schema, conflits: extractConflitsFor(schema.conflits) })(
+        target,
+        property,
+      )
+    })
+
+    factory = target.constructor
+  }
+
+  return factory as Of<UnionToIntersection<typeof targets[number]>>
 }

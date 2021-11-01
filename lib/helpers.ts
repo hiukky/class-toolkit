@@ -32,7 +32,7 @@ export const setPropertyMetadataFor = (
   target: Object,
 ): void => {
   Reflect.defineProperty(target, `__${property}`, {
-    value: schema,
+    value: schema.meta,
     enumerable: false,
     configurable: false,
   })
@@ -42,7 +42,14 @@ export const getPropertyMetadataFor = (
   property: string,
   target: Object,
 ): QueryTypes.MetadataSchema => {
-  return Reflect.get(target, `__${property}`) || {}
+  const meta = Reflect.get(target, `__${property}`) || {}
+  const schema = Reflect.getMetadata(Key.Schema, target.constructor)
+
+  return (
+    Object.assign(schema[property], {
+      meta,
+    }) || {}
+  )
 }
 
 export const setPropertySchemaFor = (

@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { Transform, Type } from 'class-transformer'
+import { Expose, Transform, Type } from 'class-transformer'
 import {
   IsNotEmpty,
   registerDecorator,
@@ -10,9 +10,9 @@ import { QueryTypes } from './interfaces'
 import {
   getPropertyMetadataFor,
   setPropertyMetadataFor,
-  setPropertySchemaFor,
   parseToMetadata,
   getParsedValueFor,
+  setPropertySchemaFor,
 } from './helpers'
 import { Model } from './mixin'
 
@@ -42,7 +42,7 @@ export function Prop(options: QueryTypes.SchemaOptions) {
 
       if (schema.decorate) {
         Reflect.defineProperty(Base, 'name', {
-          value: `${target.constructor.name}`,
+          value: target.constructor.name,
         })
 
         const { enums, args } = schema
@@ -65,10 +65,12 @@ export function Prop(options: QueryTypes.SchemaOptions) {
           .reduce((a, b) => [...a, ...b], [])
       }
 
-      setPropertyMetadataFor(
-        { ...schema, meta, operators: Array.from(new Set(operators)) },
+      setPropertyMetadataFor({ ...schema, meta }, propertyName, data?.newObject)
+
+      setPropertySchemaFor(
         propertyName,
-        data?.newObject,
+        { ...schema, operators: Array.from(new Set(operators)) },
+        target.constructor,
       )
 
       const value = getParsedValueFor(schema.type, meta?.value)
