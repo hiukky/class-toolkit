@@ -2,7 +2,7 @@ import 'reflect-metadata'
 import { QueryTypes } from './interfaces'
 import { JSON_PROPS, Key } from './constants'
 import { PropMetadataDTO } from './dto'
-import { extractConflitsFor } from './helpers'
+import { resolveConflitsFor } from './helpers'
 import { Prop } from './decorator'
 
 type Of<T> = T & PropConstructor<Contract>
@@ -67,7 +67,7 @@ function Factory() {
                         return [key, (value as Function).name]
 
                       case 'conflits':
-                        return [key, extractConflitsFor(value as [])]
+                        return [key, resolveConflitsFor(value as [])]
 
                       default:
                         return [key, value]
@@ -85,30 +85,30 @@ function Factory() {
 export function Model<T extends PropConstructor<{}>[]>(
   ...targets: T
 ): Of<UnionToIntersection<typeof targets[number]>> {
-  class Base extends Factory() {}
+  let Model: any = Factory()
 
-  let factory: any = Base
+  if (targets?.length) {
+    Model = class extends Factory() {
+      constructor() {
+        super()
 
-  if (targets.length) {
-    const target = new Base()
+        const metadata: Record<string, QueryTypes.Schema> = targets
+          .map(baseConstructor =>
+            Reflect.getMetadata(Key.Schema, baseConstructor),
+          )
+          .reduce((a, b) => Object.assign(a, b))
 
-    const schemas: any[] = targets
-      .map(baseConstructor => Reflect.getMetadata(Key.Schema, baseConstructor))
-      .reduce((a, b) => Object.assign(a, b))
-
-    Object.entries(schemas).forEach(([property, schema]) => {
-      Reflect.defineProperty(target, property, {
-        value: undefined,
-      })
-
-      Prop({ ...schema, conflits: extractConflitsFor(schema.conflits) })(
-        target,
-        property,
-      )
-    })
-
-    factory = target.constructor
+        if (metadata) {
+          Object.entries(metadata).forEach(([property, schema]) => {
+            Prop({ ...schema, conflits: resolveConflitsFor(schema.conflits) })(
+              this,
+              property,
+            )
+          })
+        }
+      }
+    }
   }
 
-  return factory as Of<UnionToIntersection<typeof targets[number]>>
+  return Model as Of<UnionToIntersection<typeof targets[number]>>
 }

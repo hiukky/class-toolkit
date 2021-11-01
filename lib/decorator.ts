@@ -31,7 +31,7 @@ export function Prop(options: QueryTypes.SchemaOptions) {
     setPropertySchemaFor(propertyName, schema, target.constructor)
 
     Type(data => {
-      class Base extends Model() {}
+      class Proto extends Model() {}
 
       const meta = parseToMetadata({
         ...schema,
@@ -41,7 +41,7 @@ export function Prop(options: QueryTypes.SchemaOptions) {
       let operators = schema.operators
 
       if (schema.decorate) {
-        Reflect.defineProperty(Base, 'name', {
+        Reflect.defineProperty(Proto, 'name', {
           value: target.constructor.name,
         })
 
@@ -55,10 +55,16 @@ export function Prop(options: QueryTypes.SchemaOptions) {
         extraDecorators
           ?.filter(({ when }) => when.includes(meta.operator))
           ?.forEach(options => {
-            Reflect.decorate(options.with, Base.prototype, propertyName)
+            Reflect.decorate(options.with, Proto.prototype, propertyName)
           })
 
-        Object.setPrototypeOf(data?.newObject, Base.prototype)
+        setPropertySchemaFor(
+          propertyName,
+          { ...schema, operators: Array.from(new Set(operators)) },
+          Proto,
+        )
+
+        Object.setPrototypeOf(data?.newObject, Proto.prototype)
 
         operators = extraDecorators
           .map(({ when }) => when)
@@ -66,12 +72,6 @@ export function Prop(options: QueryTypes.SchemaOptions) {
       }
 
       setPropertyMetadataFor({ ...schema, meta }, propertyName, data?.newObject)
-
-      setPropertySchemaFor(
-        propertyName,
-        { ...schema, operators: Array.from(new Set(operators)) },
-        target.constructor,
-      )
 
       const value = getParsedValueFor(schema.type, meta?.value)
 

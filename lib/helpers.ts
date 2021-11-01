@@ -87,7 +87,7 @@ export const getParsedValueFor = <T extends Function, V = string>(
   return input
 }
 
-export const extractConflitsFor = (
+export const resolveConflitsFor = (
   conflits: QueryTypes.Schema['conflits'],
 ): string[] => {
   let partialConflits: string[] = []

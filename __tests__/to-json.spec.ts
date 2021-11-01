@@ -1,6 +1,7 @@
 import { Model } from '../lib/mixin'
 import { Prop } from '../lib/decorator'
 import { plainToClass, deserialize } from 'class-transformer'
+import { validateSync } from 'class-validator'
 
 describe('To JSON', () => {
   it('must return a valid json schema', () => {
@@ -13,10 +14,10 @@ describe('To JSON', () => {
       @Prop({
         type: Number,
       })
-      name: string
+      foo: string
     }
 
-    class B extends Model() {
+    class B extends Model(A) {
       @Prop({
         type: Number,
       })
