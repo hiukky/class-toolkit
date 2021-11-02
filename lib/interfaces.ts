@@ -1,5 +1,5 @@
 import { ValidationOptions } from 'class-validator'
-import { PropMetadataDTO } from './dto'
+import { PropMetadataDTO } from './dtos'
 import { OPERATORS } from './constants'
 
 export namespace QueryTypes {

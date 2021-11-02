@@ -1,9 +1,9 @@
 import { plainToClass, Type } from 'class-transformer'
 import { IsIn, ValidateNested, validateSync } from 'class-validator'
-import { Model } from '../lib/mixin'
+import { Model } from '../lib/mixins'
 import { QueryTypes } from '../lib/interfaces'
-import { PropMetadataDTO } from '../lib/dto'
-import { Prop } from '../lib/decorator'
+import { PropMetadataDTO } from '../lib/dtos'
+import { Prop } from '../lib/decorators'
 
 const SCHEMA: QueryTypes.SchemaOptions = {
   name: 'Prop Test',
@@ -56,6 +56,7 @@ describe('Schema', () => {
 
     const dto = plainToClass(DTO, payload)
 
+    expect(dto.field).toBe(1)
     expect(dto).toBeInstanceOf(DTO)
     expect(dto.toSource()).toEqual({ field: '{"eq":1}' })
     expect(dto.toSchema()).toEqual({
@@ -80,6 +81,7 @@ describe('Schema', () => {
         conflits: [],
       },
     })
+    expect(dto.get('field')).toBeInstanceOf(PropMetadataDTO)
     expect(dto.get('field')).toEqual({
       operator: 'eq',
       value: 1,
@@ -106,11 +108,12 @@ describe('Schema', () => {
 
     const { property, constraints } = validateSync(dto)[0]
 
+    expect(dto).toBeInstanceOf(DTO)
     expect(property).toEqual('b')
     expect(dto.toJSON().b.conflits).toEqual(['a'])
-    expect(constraints?.['rule']).toEqual(
-      'b: property "b" conflicts with property "a"',
-    )
+    expect(constraints).toEqual({
+      rule: 'b: property "b" conflicts with property "a"',
+    })
   })
 
   it('should return error for conflict in inheritance schema', () => {
@@ -150,6 +153,7 @@ describe('Schema', () => {
 
     const { property, constraints } = validateSync(dto)[0]
 
+    expect(dto).toBeInstanceOf(ExampleDTO)
     expect(property).toEqual('b')
     expect(constraints?.['rule']).toEqual(
       'b: property "b" conflicts with property "a"',

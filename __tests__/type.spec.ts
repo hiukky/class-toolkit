@@ -1,9 +1,9 @@
 import { plainToClass } from 'class-transformer'
-import { Model } from '../lib/mixin'
-import { Prop } from '../lib/decorator'
+import { Model } from '../lib/mixins'
+import { Prop } from '../lib/decorators'
 
 describe('Type', () => {
-  it('Prop type', () => {
+  it('must return values with real types', () => {
     class DTO extends Model() {
       @Prop({
         type: Number,
@@ -27,10 +27,6 @@ describe('Type', () => {
 
       @Prop({
         type: Object,
-
-        options: {
-          each: true,
-        },
       })
       object: Record<string, any>
     }

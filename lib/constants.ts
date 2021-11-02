@@ -25,7 +25,6 @@ export enum Key {
   Prop = 'rule',
   Schema = 'rules::storage:schema',
   Metadata = 'rules::storage:metadata',
-  Context = 'rules::storage:schema.context',
 }
 
 export const DEFAULT_MESSAGE = 'rule not satisfied'

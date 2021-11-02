@@ -1,5 +1,6 @@
 import { IsArray, IsEmail, IsIn } from 'class-validator'
-import { Model, Prop } from '../lib'
+import { Model } from '../lib/mixins'
+import { Prop } from '../lib/decorators'
 
 const LEVELS = <const>['admin', 'master']
 

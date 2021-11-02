@@ -14,7 +14,7 @@ import {
   getParsedValueFor,
   setPropertySchemaFor,
 } from './helpers'
-import { Model } from './mixin'
+import { Model } from './mixins'
 
 let REFERENCES: Record<string, InstanceType<any>> = {}
 

@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { plainToClass, Type } from 'class-transformer'
 import { Key } from './constants'
-import { PropMetadataDTO } from './dto'
+import { PropMetadataDTO } from './dtos'
 import { QueryTypes } from './interfaces'
 
 export const parseToMetadata = (

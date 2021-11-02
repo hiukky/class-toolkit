@@ -1,5 +1,5 @@
 export { OPERATORS } from './lib/constants'
-export { Model } from './lib/mixin'
+export { Model } from './lib/mixins'
 export { PropMetadataDTO } from './lib/dto'
 export { QueryTypes } from './lib/interfaces'
-export { Prop } from './lib/decorator'
+export { Prop } from './lib/decorators'

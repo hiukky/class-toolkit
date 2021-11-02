@@ -1,9 +1,10 @@
 import 'reflect-metadata'
 import { QueryTypes } from './interfaces'
 import { JSON_PROPS, Key } from './constants'
-import { PropMetadataDTO } from './dto'
+import { PropMetadataDTO } from './dtos'
 import { resolveConflitsFor } from './helpers'
-import { Prop } from './decorator'
+import { Prop } from './decorators'
+import { plainToClass } from 'class-transformer'
 
 type Of<T> = T & PropConstructor<Contract>
 type PropsOf<T> = keyof Omit<T, keyof Contract>
@@ -34,7 +35,10 @@ function Factory() {
     }
 
     get<K extends KeyOf<this>>(property: K): PropMetadataDTO {
-      return Reflect.get(this, `__${property}`)
+      return plainToClass(
+        PropMetadataDTO,
+        Reflect.get(this, `__${property}`) || {},
+      )
     }
 
     toSchema<K extends KeyOf<this>>(): Record<K, QueryTypes.Schema> {
@@ -101,7 +105,7 @@ export function Model<T extends PropConstructor<{}>[]>(
         if (metadata) {
           Object.entries(metadata).forEach(([property, schema]) => {
             Prop({ ...schema, conflits: resolveConflitsFor(schema.conflits) })(
-              this.constructor.prototype,
+              this,
               property,
             )
           })
