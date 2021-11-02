@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { plainToClass, Type } from 'class-transformer'
+import { ClassConstructor, plainToClass, Type } from 'class-transformer'
 import { Key } from './constants'
 import { PropMetadataDTO } from './dtos'
 import { QueryTypes } from './interfaces'
@@ -72,24 +72,17 @@ export const setPropertySchemaFor = (
   )
 }
 
-export const getParsedValueFor = <T extends Function, V = string>(
+export const getParsedValueFor = <T extends ClassConstructor<any>, V = string>(
   type: T,
   value: V,
 ) => {
-  class Value {
-    @Type(() => type)
-    input: V
-  }
-
   let defaultInput = value
 
   try {
     defaultInput = JSON.parse(value as any)
   } catch {}
 
-  const { input } = plainToClass(Value, { input: defaultInput })
-
-  return input
+  return plainToClass(type, defaultInput)
 }
 
 export const resolveConflitsFor = (

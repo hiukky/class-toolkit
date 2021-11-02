@@ -1,6 +1,7 @@
 import { ValidationOptions } from 'class-validator'
 import { PropMetadataDTO } from './dtos'
 import { OPERATORS } from './constants'
+import { ClassConstructor } from 'class-transformer'
 
 export namespace QueryTypes {
   export type Operators = keyof typeof OPERATORS
@@ -34,7 +35,7 @@ export namespace QueryTypes {
   }
 
   export type Schema = {
-    type: Function
+    type: ClassConstructor<any>
     name?: string
     required?: boolean
     operators: Operators[]
