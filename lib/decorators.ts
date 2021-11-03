@@ -24,6 +24,22 @@ const VALIDATION_METADATA: ValidationMetadata[] =
 export function Prop(options: QueryTypes.SchemaOptions) {
   const schema = { ...DEFAULT_SCHEMA, ...options }
 
+  let extraDecorators: QueryTypes.Decorate[] = []
+  let operators: QueryTypes.Operators[] = schema.operators
+
+  if (schema?.decorate) {
+    const { enums, args } = schema
+
+    extraDecorators = schema.decorate({
+      enums: enums as [],
+      args: args as [],
+    })
+
+    operators = extraDecorators
+      .map(({ when }) => when)
+      .reduce((a, b) => [...a, ...b], [])
+  }
+
   return function (target: Object, propertyName: string) {
     let CONSTRAINTS: string[] = []
 
@@ -31,7 +47,14 @@ export function Prop(options: QueryTypes.SchemaOptions) {
       CONSTRAINTS.push(message)
     }
 
-    setPropertySchemaFor(propertyName, schema, target.constructor)
+    setPropertySchemaFor(
+      propertyName,
+      {
+        ...schema,
+        operators: Array.from(new Set(operators)),
+      },
+      target.constructor,
+    )
 
     Type(data => {
       const meta = parseToMetadata({
@@ -40,13 +63,6 @@ export function Prop(options: QueryTypes.SchemaOptions) {
       })
 
       if (schema.decorate) {
-        const { enums, args } = schema
-
-        const extraDecorators = schema.decorate({
-          enums: enums as [],
-          args: args as [],
-        })
-
         VALIDATION_METADATA.filter(
           storage => storage.propertyName === propertyName,
         ).forEach(storage => {
@@ -58,16 +74,6 @@ export function Prop(options: QueryTypes.SchemaOptions) {
           ?.forEach(options => {
             Reflect.decorate(options.with, target, propertyName)
           })
-
-        const operators = extraDecorators
-          .map(({ when }) => when)
-          .reduce((a, b) => [...a, ...b], [])
-
-        setPropertySchemaFor(
-          propertyName,
-          { ...schema, operators: Array.from(new Set(operators)) },
-          target.constructor,
-        )
       }
 
       setPropertyMetadataFor({ ...schema, meta }, propertyName, data?.newObject)
