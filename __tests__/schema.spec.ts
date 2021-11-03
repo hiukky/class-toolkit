@@ -1,9 +1,6 @@
 import { plainToClass, Type } from 'class-transformer'
 import { IsIn, ValidateNested, validateSync } from 'class-validator'
-import { Model } from '../lib/mixins'
-import { QueryTypes } from '../lib/interfaces'
-import { PropMetadataDTO } from '../lib/dtos'
-import { Prop } from '../lib/decorators'
+import { Model, QueryTypes, PropMetadataDTO, Prop } from '../index'
 
 const SCHEMA: QueryTypes.SchemaOptions = {
   name: 'Prop Test',

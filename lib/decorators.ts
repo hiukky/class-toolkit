@@ -1,6 +1,6 @@
-import 'reflect-metadata'
 import { Transform, Type } from 'class-transformer'
 import {
+  getMetadataStorage,
   IsNotEmpty,
   registerDecorator,
   ValidationArguments,
@@ -14,9 +14,12 @@ import {
   getParsedValueFor,
   setPropertySchemaFor,
 } from './helpers'
-import { Model } from './mixins'
+import { ValidationMetadata } from 'class-validator/types/metadata/ValidationMetadata'
 
 let REFERENCES: Record<string, InstanceType<any>> = {}
+
+const VALIDATION_METADATA: ValidationMetadata[] =
+  getMetadataStorage()['validationMetadatas']
 
 export function Prop(options: QueryTypes.SchemaOptions) {
   const schema = { ...DEFAULT_SCHEMA, ...options }
@@ -31,18 +34,12 @@ export function Prop(options: QueryTypes.SchemaOptions) {
     setPropertySchemaFor(propertyName, schema, target.constructor)
 
     Type(data => {
-      class Proto extends Model() {}
-
       const meta = parseToMetadata({
         ...schema,
         meta: data?.object[propertyName],
       })
 
       if (schema.decorate) {
-        Reflect.defineProperty(Proto, 'name', {
-          value: target.constructor.name,
-        })
-
         const { enums, args } = schema
 
         const extraDecorators = schema.decorate({
@@ -50,10 +47,16 @@ export function Prop(options: QueryTypes.SchemaOptions) {
           args: args as [],
         })
 
+        VALIDATION_METADATA.filter(
+          storage => storage.propertyName === propertyName,
+        ).forEach(storage => {
+          storage.constraintCls = () => {}
+        })
+
         extraDecorators
           ?.filter(({ when }) => when.includes(meta.operator))
           ?.forEach(options => {
-            Reflect.decorate(options.with, Proto.prototype, propertyName)
+            Reflect.decorate(options.with, target, propertyName)
           })
 
         const operators = extraDecorators
@@ -63,10 +66,8 @@ export function Prop(options: QueryTypes.SchemaOptions) {
         setPropertySchemaFor(
           propertyName,
           { ...schema, operators: Array.from(new Set(operators)) },
-          Proto,
+          target.constructor,
         )
-
-        Object.setPrototypeOf(data?.newObject, Proto.prototype)
       }
 
       setPropertyMetadataFor({ ...schema, meta }, propertyName, data?.newObject)

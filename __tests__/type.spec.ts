@@ -1,6 +1,5 @@
 import { plainToClass } from 'class-transformer'
-import { Model } from '../lib/mixins'
-import { Prop } from '../lib/decorators'
+import { Model, Prop } from '../index'
 
 describe('Type', () => {
   it('must return values with real types', () => {

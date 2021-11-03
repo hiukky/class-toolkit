@@ -1,4 +1,3 @@
-import 'reflect-metadata'
 import { ClassConstructor, plainToClass, Type } from 'class-transformer'
 import { Key } from './constants'
 import { PropMetadataDTO } from './dtos'

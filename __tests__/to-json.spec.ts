@@ -1,5 +1,5 @@
-import { Model } from '../lib/mixins'
-import { Prop } from '../lib/decorators'
+import { Model, Prop } from '../index'
+
 import { plainToClass } from 'class-transformer'
 
 class A extends Model() {

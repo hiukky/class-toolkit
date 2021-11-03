@@ -1,4 +1,3 @@
-import 'reflect-metadata'
 import { QueryTypes } from './interfaces'
 import { JSON_PROPS, Key } from './constants'
 import { PropMetadataDTO } from './dtos'

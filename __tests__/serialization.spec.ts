@@ -1,6 +1,5 @@
 import { plainToClass, serialize, deserialize } from 'class-transformer'
-import { Prop } from '../lib/decorators'
-import { Model } from '../lib/mixins'
+import { Prop, Model } from '../index'
 
 describe('Serealization', () => {
   class DTO extends Model() {
