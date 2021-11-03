@@ -1,6 +1,7 @@
 import { Transform, Type } from 'class-transformer'
 import {
   getMetadataStorage,
+  IsArray,
   IsNotEmpty,
   registerDecorator,
   ValidationArguments,
@@ -25,7 +26,6 @@ export function Prop(options: QueryTypes.SchemaOptions) {
   const schema = { ...DEFAULT_SCHEMA, ...options }
 
   let extraDecorators: QueryTypes.Decorate[] = []
-  let operators: QueryTypes.Operators[] = schema.operators
 
   if (schema?.decorate) {
     const { enums, args } = schema
@@ -35,9 +35,13 @@ export function Prop(options: QueryTypes.SchemaOptions) {
       args: args as [],
     })
 
-    operators = extraDecorators
-      .map(({ when }) => when)
-      .reduce((a, b) => [...a, ...b], [])
+    schema.operators = Array.from(
+      new Set(
+        extraDecorators
+          .map(({ when }) => when)
+          .reduce((a, b) => [...a, ...b], []),
+      ),
+    )
   }
 
   return function (target: Object, propertyName: string) {
@@ -47,14 +51,7 @@ export function Prop(options: QueryTypes.SchemaOptions) {
       CONSTRAINTS.push(message)
     }
 
-    setPropertySchemaFor(
-      propertyName,
-      {
-        ...schema,
-        operators: Array.from(new Set(operators)),
-      },
-      target.constructor,
-    )
+    setPropertySchemaFor(propertyName, schema, target.constructor)
 
     Type(data => {
       const meta = parseToMetadata({
@@ -62,29 +59,35 @@ export function Prop(options: QueryTypes.SchemaOptions) {
         meta: data?.object[propertyName],
       })
 
-      if (schema.decorate) {
+      Reflect.defineProperty(data!.object, propertyName, {
+        value: getParsedValueFor(schema.type, meta?.value),
+        enumerable: true,
+        configurable: true,
+      })
+
+      if (schema.operators.includes(meta.operator) && schema.decorate) {
         VALIDATION_METADATA.filter(
           storage => storage.propertyName === propertyName,
         ).forEach(storage => {
           storage.constraintCls = () => {}
         })
 
+        const decorators: PropertyDecorator[] = []
+
         extraDecorators
           ?.filter(({ when }) => when.includes(meta.operator))
           ?.forEach(options => {
-            Reflect.decorate(options.with, target, propertyName)
+            decorators.push(...options.with)
           })
+
+        if (['in', 'ni'].includes(meta.operator)) {
+          decorators.push(IsArray())
+        }
+
+        Reflect.decorate(decorators, target, propertyName)
       }
 
       setPropertyMetadataFor({ ...schema, meta }, propertyName, data?.newObject)
-
-      const value = getParsedValueFor(schema.type, meta?.value)
-
-      Reflect.defineProperty(data!.object, propertyName, {
-        value,
-        enumerable: true,
-        configurable: true,
-      })
 
       REFERENCES[target.constructor.name] = data?.newObject
 
