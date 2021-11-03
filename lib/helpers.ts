@@ -77,9 +77,11 @@ export const getParsedValueFor = <T extends ClassConstructor<any>, V = string>(
 ) => {
   let defaultInput = value
 
-  try {
-    defaultInput = JSON.parse(value as any)
-  } catch {}
+  if (typeof value === 'string') {
+    try {
+      defaultInput = JSON.parse(value as any)
+    } catch {}
+  }
 
   return plainToClass(type, defaultInput)
 }

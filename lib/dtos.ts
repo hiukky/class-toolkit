@@ -1,4 +1,4 @@
-import { IsIn, IsOptional, IsString } from 'class-validator'
+import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import { OPERATORS } from './constants'
 import { QueryTypes } from './interfaces'
 
@@ -6,7 +6,7 @@ export class PropMetadataDTO {
   @IsIn(Object.keys(OPERATORS))
   operator: QueryTypes.Operators
 
-  @IsString()
+  @IsNotEmpty()
   value: any
 
   @IsOptional()

@@ -19,7 +19,7 @@ import { ValidationMetadata } from 'class-validator/types/metadata/ValidationMet
 let REFERENCES: Record<string, InstanceType<any>> = {}
 
 const VALIDATION_METADATA: ValidationMetadata[] =
-  getMetadataStorage()['validationMetadatas']
+  getMetadataStorage()[Key.StorageMetadata]
 
 export function Prop(options: QueryTypes.SchemaOptions) {
   const schema = { ...DEFAULT_SCHEMA, ...options }

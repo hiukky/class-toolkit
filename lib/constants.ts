@@ -21,12 +21,6 @@ export const OPERATORS = <const>{
   ni: 'notIn',
 }
 
-export enum Key {
-  Prop = 'rule',
-  Schema = 'rules::storage:schema',
-  Metadata = 'rules::storage:metadata',
-}
-
 export const DEFAULT_MESSAGE = 'rule not satisfied'
 
 export const DEFAULT_SCHEMA: QueryTypes.Schema = {
@@ -37,4 +31,11 @@ export const DEFAULT_SCHEMA: QueryTypes.Schema = {
   enums: [],
   args: [],
   conflits: [],
+}
+
+export enum Key {
+  Prop = 'rule',
+  Schema = 'rules::storage:schema',
+  Metadata = 'rules::storage:metadata',
+  StorageMetadata = 'validationMetadatas',
 }
