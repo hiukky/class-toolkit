@@ -9,7 +9,7 @@ spawn(
     'index.ts',
     '--outfile=dist/index.js',
     '--bundle',
-    '--minify',
+    // '--minify',
     '--platform=node',
     '--external:class-transformer',
     '--external:class-validator',

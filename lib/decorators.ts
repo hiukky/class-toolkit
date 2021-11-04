@@ -16,7 +16,7 @@ import {
 
 let REFERENCES: Record<string, InstanceType<any>> = {}
 
-export function Validator(schema: QueryTypes.SchemaOptions): PropertyDecorator {
+export function Validator(schema: QueryTypes.Schema): PropertyDecorator {
   return function (target: Object, propertyName: string) {
     let CONSTRAINTS: string[] = []
 
@@ -27,7 +27,7 @@ export function Validator(schema: QueryTypes.SchemaOptions): PropertyDecorator {
     const { message, ...validatorOptions } = schema?.options || {}
 
     registerDecorator({
-      name: Key.Prop,
+      name: Key.Constraint,
       target: target.constructor,
       propertyName: propertyName,
       options: validatorOptions,
@@ -137,10 +137,10 @@ export function Prop(options: QueryTypes.SchemaOptions): PropertyDecorator {
   return function (target: Object, propertyName: string) {
     setPropertySchemaFor(propertyName, schema, target.constructor)
 
-    Type(data => {
-      updateStorageFor(target)
+    Validator(schema)(target, propertyName)
 
-      const decorators: PropertyDecorator[] = [Validator(schema)]
+    Type(data => {
+      const decorators: PropertyDecorator[] = []
 
       const meta = parseToMetadata({
         ...schema,
@@ -161,7 +161,12 @@ export function Prop(options: QueryTypes.SchemaOptions): PropertyDecorator {
           })
       }
 
-      Reflect.decorate(decorators, target, propertyName)
+      updateStorageFor({
+        target,
+        decorators,
+        property: propertyName,
+        properties: Object.keys(data?.object || {}),
+      })
 
       setPropertyMetadataFor({ ...schema, meta }, propertyName, data?.newObject)
 

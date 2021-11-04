@@ -1,10 +1,19 @@
 import { ClassConstructor, plainToClass } from 'class-transformer'
-import { getMetadataStorage } from 'class-validator'
+import { getMetadataStorage, IsOptional } from 'class-validator'
 import { ConstraintMetadata } from 'class-validator/types/metadata/ConstraintMetadata'
 import { ValidationMetadata } from 'class-validator/types/metadata/ValidationMetadata'
 import { Key } from './constants'
 import { PropMetadataDTO } from './dtos'
 import { QueryTypes } from './interfaces'
+
+export type StorageUpdate = {
+  decorators: PropertyDecorator[]
+  property: string
+  target: Object
+  properties: string[]
+}
+
+export type PartialMetadata = [ValidationMetadata, ConstraintMetadata]
 
 export const parseToMetadata = (
   schema: Partial<QueryTypes.MetadataSchema>,
@@ -107,27 +116,57 @@ export const resolveConflitsFor = (
   return partialConflits
 }
 
-export const getUniqueFor = <V extends any[], K extends keyof V>(
-  arr: V,
-  key: string,
-): V => {
-  const unique = arr
-    .map(e => e[key])
-    .map((e, i, final) => final.indexOf(e) === i && i)
-    .filter(e => arr[e as K])
-    .map(e => arr[e as K])
+export const updateStorageFor = ({
+  decorators,
+  property,
+  target,
+  properties,
+}: StorageUpdate): void => {
+  const storage = getMetadataStorage()
 
-  return unique as V
-}
+  const getGroupedMetadata = (): [string, ValidationMetadata[]][] =>
+    Object.entries(
+      storage.groupByPropertyName(
+        storage.getTargetValidationMetadatas(
+          target.constructor,
+          typeof target,
+          true,
+          true,
+        ),
+      ),
+    )
 
-export const updateStorageFor = (target: Object): void => {
-  const metadata: ValidationMetadata[] =
-    getMetadataStorage()[Key.ValidationMetadata]
+  const _metadatas: ValidationMetadata[] = []
+  const _constraints: ConstraintMetadata[] = []
 
-  getMetadataStorage()[Key.ValidationMetadata] = metadata.filter(
-    (v, i, a) =>
-      a.findIndex(
-        t => t.target === v.target && t.propertyName === v.propertyName,
-      ) === i,
+  getGroupedMetadata().forEach(([key, schema]) => {
+    const data = schema
+      .map(
+        meta =>
+          [
+            meta,
+            storage.getTargetValidatorConstraints(meta.constraintCls)[0],
+          ] as PartialMetadata,
+      )
+      .filter(([, constraint]) => constraint?.name !== Key.Constraint)
+
+    if (key === property) {
+      data?.forEach(([meta, constraint]) => {
+        _metadatas.push(meta)
+        _constraints.push(constraint)
+      })
+    } else if (!properties.includes(key) && data.length > 1) {
+      Reflect.decorate([IsOptional()], target, key)
+    }
+  })
+
+  storage[Key.ValidationMetadata] = storage[Key.ValidationMetadata].filter(
+    (meta: ValidationMetadata) => !_metadatas.includes(meta),
   )
+
+  storage[Key.ConstraintMetadata] = storage[Key.ConstraintMetadata].filter(
+    (meta: ConstraintMetadata) => !_constraints.includes(meta),
+  )
+
+  Reflect.decorate(decorators, target, property)
 }
