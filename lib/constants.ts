@@ -35,7 +35,9 @@ export const DEFAULT_SCHEMA: QueryTypes.Schema = {
 
 export enum Key {
   Prop = 'rule',
-  Schema = 'rules::storage:schema',
-  Metadata = 'rules::storage:metadata',
-  StorageMetadata = 'validationMetadatas',
+  Schema = 'rule::storage:schema',
+  Metadata = 'rule::storage:metadata',
+  ValidationMetadata = 'validationMetadatas',
+  ConstraintMetadata = 'constraintMetadatas',
+  PropertyMetadata = 'rule::storage:property:metadata',
 }

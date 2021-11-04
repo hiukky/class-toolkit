@@ -102,11 +102,12 @@ export function Model<T extends PropConstructor<{}>[]>(
           .reduce((a, b) => Object.assign(a, b))
 
         if (metadata) {
-          Object.entries(metadata).forEach(([property, schema]) => {
-            Prop({ ...schema, conflits: resolveConflitsFor(schema.conflits) })(
-              this,
-              property,
-            )
+          Object.entries(metadata)
+          .forEach(([property, schema]) => {
+            Prop({
+              ...schema,
+              conflits: resolveConflitsFor(schema.conflits),
+            })(this, property)
           })
         }
       }
