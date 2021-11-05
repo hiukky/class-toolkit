@@ -1,5 +1,13 @@
 import { plainToClass } from 'class-transformer'
-import { IsArray, IsIn, IsNumber, validateSync } from 'class-validator'
+import {
+  ArrayMinSize,
+  IsArray,
+  IsIn,
+  IsNumber,
+  Max,
+  Min,
+  validateSync,
+} from 'class-validator'
 import { getErrorConstraints } from '../utils/test.util'
 import { Prop, Model } from '../index'
 
@@ -85,13 +93,24 @@ describe('Decorate', () => {
             when: ['ls'],
             with: [IsIn(enums)],
           },
+          {
+            when: ['bt'],
+            with: [Min(1), Max(10)],
+          },
         ],
       })
       id: number | number[]
     }
 
     const dto = plainToClass(Example, {})
-    expect(dto.toJSON().id.operators).toEqual(['eq', 'df', 'ls', 'in', 'ni'])
+    expect(dto.toJSON().id.operators).toEqual([
+      'eq',
+      'df',
+      'ls',
+      'in',
+      'ni',
+      'bt',
+    ])
 
     const dtoA = plainToClass(Example, { id: { eq: 'A' } })
 
@@ -108,6 +127,13 @@ describe('Decorate', () => {
     const dtoC = plainToClass(Example, { id: { ls: 100 } })
     expect(getErrorConstraints(validateSync(dtoC))).toEqual({
       isIn: 'id must be one of the following values: 10, 50',
+    })
+
+    const dtoD = plainToClass(Example, { id: { bt: 100 } })
+    expect(getErrorConstraints(validateSync(dtoD))).toEqual({
+      arrayMaxSize: 'id must contain not more than 2 elements',
+      arrayMinSize: 'id must contain at least 2 elements',
+      max: 'id must not be greater than 10',
     })
   })
 

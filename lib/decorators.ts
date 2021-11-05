@@ -1,5 +1,8 @@
 import { Transform, Type } from 'class-transformer'
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
   IsNotEmpty,
   registerDecorator,
   ValidationArguments,
@@ -165,6 +168,19 @@ export function Prop(options: QueryTypes.SchemaOptions): PropertyDecorator {
           ?.forEach(options => {
             decorators.push(...options.with)
           })
+      }
+
+      if (schema.operators.includes(meta.operator)) {
+        switch (meta.operator) {
+          case 'in':
+          case 'ni':
+            decorators.push(IsArray())
+            break
+          case 'bt':
+            decorators.push(ArrayMinSize(2), ArrayMaxSize(2))
+          default:
+            break
+        }
       }
 
       updateStorageFor({

@@ -19,6 +19,7 @@ export const OPERATORS = <const>{
   df: 'diff',
   in: 'in',
   ni: 'notIn',
+  bt: 'between',
 }
 
 export const DEFAULT_MESSAGE = 'rule not satisfied'
