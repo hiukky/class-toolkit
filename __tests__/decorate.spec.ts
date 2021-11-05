@@ -110,4 +110,25 @@ describe('Decorate', () => {
       isIn: 'id must be one of the following values: 10, 50',
     })
   })
+
+  it('must return error for an invalid or missing operator', () => {
+    class DTO extends Model() {
+      @Prop({
+        type: Number,
+        decorate: [
+          {
+            when: ['eq', 'ge'],
+            with: [IsNumber()],
+          },
+        ],
+      })
+      field: number
+    }
+
+    const dto = plainToClass(DTO, { field: { foo: 10 } })
+
+    expect(getErrorConstraints(validateSync(dto))).toEqual({
+      rule: 'field: wait for one of the operators: eq,ge',
+    })
+  })
 })

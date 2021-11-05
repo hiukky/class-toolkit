@@ -4,7 +4,7 @@ import {
   registerDecorator,
   ValidationArguments,
 } from 'class-validator'
-import { DEFAULT_MESSAGE, DEFAULT_SCHEMA, Key } from './constants'
+import { DEFAULT_MESSAGE, DEFAULT_SCHEMA, Key, OPERATORS } from './constants'
 import { QueryTypes } from './interfaces'
 import {
   getPropertyMetadataFor,
@@ -24,7 +24,7 @@ export function Validator(schema: QueryTypes.Schema): PropertyDecorator {
       CONSTRAINTS.push(message)
     }
 
-    const { message, ...validatorOptions } = schema?.options || {}
+    const { message, ...validatorOptions } = schema.options || {}
 
     registerDecorator({
       name: Key.Constraint,
@@ -35,24 +35,24 @@ export function Validator(schema: QueryTypes.Schema): PropertyDecorator {
       validator: {
         validate: <V>(payload: V, args: ValidationArguments) => {
           try {
-            const schemaUpdated = getPropertyMetadataFor(
+            const { meta, operators } = getPropertyMetadataFor(
               propertyName,
-              args?.object,
+              args.object,
             )
 
-            const { meta, operators } = schemaUpdated
+            const contextOperators = Object.keys(
+              JSON.parse(meta.source),
+            ).filter(key => !!{ ...OPERATORS }[key])
 
-            const keys = Object.keys(JSON.parse(meta.source))
-
-            if (keys.length > 1 && !meta?.args) {
-              push('only one operation is allowed per field')
-            } else if (!operators?.some(op => keys.includes(op))) {
+            if (!contextOperators.length) {
               push(`wait for one of the operators: ${operators}`)
+            } else if (contextOperators.length > 1) {
+              push('only one operation is allowed per field')
             } else if (schema.validate) {
               const commonValidation = schema.validate({
                 value: payload,
                 operator: meta.operator,
-                args: meta?.args,
+                args: meta.args,
                 target: args.object,
                 schema: {
                   enums: schema.enums as [],
@@ -65,7 +65,7 @@ export function Validator(schema: QueryTypes.Schema): PropertyDecorator {
               } else if (typeof commonValidation === 'boolean') {
                 return commonValidation
               }
-            } else if (schema?.conflits?.length) {
+            } else if (schema.conflits?.length) {
               schema.conflits.forEach(conflit => {
                 if (typeof conflit === 'string') {
                   if (args.object[conflit as keyof typeof args.object]) {
@@ -117,7 +117,7 @@ export function Prop(options: QueryTypes.SchemaOptions): PropertyDecorator {
 
   let extraDecorators: QueryTypes.Decorate[] = []
 
-  if (schema?.decorate) {
+  if (schema.decorate) {
     const { enums, args } = schema
 
     if (schema.decorate instanceof Function) {
@@ -154,7 +154,7 @@ export function Prop(options: QueryTypes.SchemaOptions): PropertyDecorator {
       })
 
       Reflect.defineProperty(data!.object, propertyName, {
-        value: meta?.value,
+        value: meta.value,
         enumerable: true,
         configurable: true,
       })

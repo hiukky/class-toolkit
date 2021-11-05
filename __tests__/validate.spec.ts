@@ -55,6 +55,7 @@ describe('Validate', () => {
       expect(validateSync(dto)).toEqual([])
     })
   })
+
   describe("when it doesn't pass", () => {
     it('should return an error with the default message', () => {
       const dto = plainToClass(DTO, { value: 50 })
@@ -80,6 +81,40 @@ describe('Validate', () => {
 
       expect(getErrorConstraints(validateSync(dto))).toEqual({
         rule: 'A personalized message.',
+      })
+    })
+
+    it('should return a custom error message from the validator', () => {
+      class CustomDTO extends Model() {
+        @Prop({
+          type: Number,
+          validate: ({ value }) =>
+            value === 51 || 'An error message from the validator',
+        })
+        value: number
+      }
+
+      const dto = plainToClass(CustomDTO, { value: 50 })
+
+      expect(getErrorConstraints(validateSync(dto))).toEqual({
+        rule: 'value: An error message from the validator',
+      })
+    })
+
+    it('should return error if more than one argument is given for operation', () => {
+      class DTO extends Model() {
+        @Prop({
+          type: Number,
+        })
+        field: number
+      }
+
+      const dto = plainToClass(DTO, {
+        field: { eq: 50, ls: 30, args: ['foo', 'bar'] },
+      })
+
+      expect(getErrorConstraints(validateSync(dto))).toEqual({
+        rule: 'field: only one operation is allowed per field',
       })
     })
   })
