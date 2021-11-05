@@ -31,6 +31,10 @@ export const DEFAULT_SCHEMA: QueryTypes.Schema = {
   enums: [],
   args: [],
   conflits: [],
+  decorate: [],
+  toJSON: {
+    exclude: false,
+  },
 }
 
 export enum Key {

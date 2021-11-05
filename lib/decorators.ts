@@ -128,7 +128,9 @@ export function Prop(options: QueryTypes.SchemaOptions): PropertyDecorator {
     } else if (schema.decorate instanceof Array) {
       extraDecorators = [...schema.decorate]
     }
+  }
 
+  if (extraDecorators.length) {
     schema.operators = Array.from(
       new Set(
         extraDecorators

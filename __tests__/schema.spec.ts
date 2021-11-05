@@ -61,10 +61,14 @@ describe('Schema', () => {
         name: 'Prop',
         required: false,
         operators: ['eq'],
+        decorate: [],
         type: Number,
         enums: [],
         args: [],
         conflits: [],
+        toJSON: {
+          exclude: false,
+        },
       },
     })
     expect(dto.toJSON()).toEqual({

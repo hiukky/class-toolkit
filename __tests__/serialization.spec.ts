@@ -21,6 +21,10 @@ describe('Serealization', () => {
       enums: [],
       args: [],
       conflits: [],
+      decorate: [],
+      toJSON: {
+        exclude: false,
+      },
     },
   }
   const jsonSchema = {

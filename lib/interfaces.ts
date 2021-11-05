@@ -54,6 +54,9 @@ export namespace QueryTypes {
     validate?: <V extends any, A extends any[]>(
       context: Context<V, A>,
     ) => boolean | string
+    toJSON?: {
+      exclude?: boolean
+    }
   }
 
   export type SchemaOptions = Omit<Schema, 'operators'>

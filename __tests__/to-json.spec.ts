@@ -100,4 +100,35 @@ describe('To JSON', () => {
       },
     })
   })
+
+  it('must delete a property from a json schema', () => {
+    class DTO extends Model() {
+      @Prop({
+        type: String,
+        toJSON: {
+          exclude: true,
+        },
+      })
+      field_a: string
+
+      @Prop({
+        type: String,
+      })
+      field_b: string
+    }
+
+    const dto = plainToClass(DTO, { field_a: 'Foo', field_b: 'Bar' })
+
+    expect(dto.toJSON()).toEqual({
+      field_b: {
+        args: [],
+        conflits: [],
+        enums: [],
+        name: 'Prop',
+        operators: ['eq'],
+        required: false,
+        type: 'String',
+      },
+    })
+  })
 })

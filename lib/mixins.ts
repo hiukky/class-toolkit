@@ -55,8 +55,9 @@ function Factory() {
 
     toJSON(): Record<KeyOf<this>, QueryTypes.JSONSchema> {
       return Object.fromEntries(
-        Object.entries(this.toSchema<any>()).map(
-          ([key, data]: QueryTypes.Entries) => {
+        Object.entries(this.toSchema<any>())
+          .filter(([, schema]) => !schema.toJSON?.exclude)
+          .map(([key, data]: QueryTypes.Entries) => {
             return [
               key,
               Object.fromEntries(
@@ -78,8 +79,7 @@ function Factory() {
                   }),
               ),
             ]
-          },
-        ),
+          }),
       ) as Record<KeyOf<this>, QueryTypes.JSONSchema>
     }
   }
@@ -102,8 +102,7 @@ export function Model<T extends PropConstructor<{}>[]>(
           .reduce((a, b) => Object.assign(a, b))
 
         if (metadata) {
-          Object.entries(metadata)
-          .forEach(([property, schema]) => {
+          Object.entries(metadata).forEach(([property, schema]) => {
             Prop({
               ...schema,
               conflits: resolveConflitsFor(schema.conflits),
