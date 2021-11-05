@@ -11,7 +11,7 @@ describe('Serealization', () => {
 
   const dto = plainToClass(DTO, { id: { eq: 1 } })
   const payload = JSON.stringify({ id: 1 })
-  const metadata = { operator: 'eq', value: 1, source: '{"eq":1}' }
+  const metadata = { operator: 'eq', value: 1, source: '{"eq":1}', args: [] }
   const schema = {
     id: {
       name: 'Prop',

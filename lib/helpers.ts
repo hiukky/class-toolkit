@@ -25,16 +25,19 @@ export const parseToMetadata = (
       typeof schema.meta === 'string' ? JSON.parse(schema.meta) : schema.meta
 
     if (meta instanceof Object) {
-      const payload = Object.entries(meta).filter(Boolean)
-
-      const [operator, value] = payload[0]
+      const [[operator, value], [, args]] = Object.entries({
+        ...meta,
+        args: meta.args || [],
+      })
 
       metadata['operator'] = operator as QueryTypes.Operators
       metadata['value'] = value
+      metadata['args'] = args as []
       metadata['source'] = JSON.stringify(meta)
     } else if (schema.operators?.length === 1) {
       metadata['operator'] = schema.operators[0]
       metadata['value'] = meta
+      metadata['args'] = []
       metadata['source'] = JSON.stringify({ [metadata.operator]: meta })
     }
 

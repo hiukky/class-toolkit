@@ -24,7 +24,7 @@ export namespace QueryTypes {
   export type Context<V, A> = {
     value: V
     operator: Operators
-    args?: A
+    args: A
     target: Object
     schema: Required<Pick<Schema, 'enums' | 'args'>>
   }
@@ -53,7 +53,7 @@ export namespace QueryTypes {
       | ((partialSchema: Context<any, any>['schema']) => Decorate[])
     validate?: <V extends any, A extends any[]>(
       context: Context<V, A>,
-    ) => boolean | string
+    ) => boolean | string | undefined
     toJSON?: {
       exclude?: boolean
     }

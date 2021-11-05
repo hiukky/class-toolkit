@@ -84,6 +84,7 @@ describe('Schema', () => {
     })
     expect(dto.get('field')).toBeInstanceOf(PropMetadataDTO)
     expect(dto.get('field')).toEqual({
+      args: [],
       operator: 'eq',
       value: 1,
       source: '{"eq":1}',

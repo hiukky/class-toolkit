@@ -1,16 +1,7 @@
 import { plainToClass } from 'class-transformer'
-import {
-  IsArray,
-  IsIn,
-  IsNumber,
-  validateSync,
-  ValidationError,
-} from 'class-validator'
+import { IsArray, IsIn, IsNumber, validateSync } from 'class-validator'
+import { getErrorConstraints } from '../utils/test.util'
 import { Prop, Model } from '../index'
-
-const getConstraints = (error: ValidationError[]): Record<string, string> => {
-  return error[0]?.constraints as Record<string, string>
-}
 
 describe('Decorate', () => {
   it('must define a schema in the array model', () => {
@@ -71,7 +62,7 @@ describe('Decorate', () => {
     const dto = plainToClass(Example, { id: { eq: 'A' } })
 
     expect(dto.toJSON().id.operators).toEqual(['eq'])
-    expect(getConstraints(validateSync(dto))).toEqual({
+    expect(getErrorConstraints(validateSync(dto))).toEqual({
       isNumber: 'id must be a number conforming to the specified constraints',
     })
   })
@@ -104,18 +95,18 @@ describe('Decorate', () => {
 
     const dtoA = plainToClass(Example, { id: { eq: 'A' } })
 
-    expect(getConstraints(validateSync(dtoA))).toEqual({
+    expect(getErrorConstraints(validateSync(dtoA))).toEqual({
       isNumber: 'id must be a number conforming to the specified constraints',
     })
 
     const dtoB = plainToClass(Example, { id: { in: 1 } })
 
-    expect(getConstraints(validateSync(dtoB))).toEqual({
+    expect(getErrorConstraints(validateSync(dtoB))).toEqual({
       isArray: 'id must be an array',
     })
 
     const dtoC = plainToClass(Example, { id: { ls: 100 } })
-    expect(getConstraints(validateSync(dtoC))).toEqual({
+    expect(getErrorConstraints(validateSync(dtoC))).toEqual({
       isIn: 'id must be one of the following values: 10, 50',
     })
   })

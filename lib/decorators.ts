@@ -44,7 +44,7 @@ export function Validator(schema: QueryTypes.Schema): PropertyDecorator {
 
             const keys = Object.keys(JSON.parse(meta.source))
 
-            if (keys.length > 1) {
+            if (keys.length > 1 && !meta?.args) {
               push('only one operation is allowed per field')
             } else if (!operators?.some(op => keys.includes(op))) {
               push(`wait for one of the operators: ${operators}`)
@@ -62,8 +62,8 @@ export function Validator(schema: QueryTypes.Schema): PropertyDecorator {
 
               if (typeof commonValidation === 'string') {
                 push(commonValidation)
-              } else {
-                return false
+              } else if (typeof commonValidation === 'boolean') {
+                return commonValidation
               }
             } else if (schema?.conflits?.length) {
               schema.conflits.forEach(conflit => {
