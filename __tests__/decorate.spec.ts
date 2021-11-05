@@ -13,6 +13,46 @@ const getConstraints = (error: ValidationError[]): Record<string, string> => {
 }
 
 describe('Decorate', () => {
+  it('must define a schema in the array model', () => {
+    class DTO extends Model() {
+      @Prop({
+        type: Number,
+        decorate: [
+          {
+            when: ['eq'],
+            with: [IsNumber({ allowNaN: false })],
+          },
+        ],
+      })
+      value: number
+    }
+
+    const dto = plainToClass(DTO, { value: 5 })
+
+    expect(dto.value).toBe(5)
+    expect(dto.toJSON().value.operators).toEqual(['eq'])
+  })
+
+  it('must define a schema in the function model with arguments', () => {
+    class DTO extends Model() {
+      @Prop({
+        type: Number,
+        decorate: () => [
+          {
+            when: ['eq'],
+            with: [IsNumber({ allowNaN: false })],
+          },
+        ],
+      })
+      value: number
+    }
+
+    const dto = plainToClass(DTO, { value: 5 })
+
+    expect(dto.value).toBe(5)
+    expect(dto.toJSON().value.operators).toEqual(['eq'])
+  })
+
   it('should return error to a single decorator in an operation', () => {
     class Example extends Model() {
       @Prop({

@@ -120,10 +120,14 @@ export function Prop(options: QueryTypes.SchemaOptions): PropertyDecorator {
   if (schema?.decorate) {
     const { enums, args } = schema
 
-    extraDecorators = schema.decorate({
-      enums: enums as [],
-      args: args as [],
-    })
+    if (schema.decorate instanceof Function) {
+      extraDecorators = schema.decorate({
+        enums: enums as [],
+        args: args as [],
+      })
+    } else if (schema.decorate instanceof Array) {
+      extraDecorators = [...schema.decorate]
+    }
 
     schema.operators = Array.from(
       new Set(

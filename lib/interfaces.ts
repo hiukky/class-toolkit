@@ -48,7 +48,9 @@ export namespace QueryTypes {
           rules: string[]
         }[]
     options?: ValidationOptions
-    decorate?: (partialSchema: Context<any, any>['schema']) => Decorate[]
+    decorate?:
+      | Decorate[]
+      | ((partialSchema: Context<any, any>['schema']) => Decorate[])
     validate?: <V extends any, A extends any[]>(
       context: Context<V, A>,
     ) => boolean | string
